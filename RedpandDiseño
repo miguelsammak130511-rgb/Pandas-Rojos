@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pandas Rojos · Programa de Adopción</title>
+<style>
+  :root{
+    --rojo: #d81e2c;
+    --rojo-oscuro: #a3121d;
+    --rojo-suave: #ffe1e2;
+    --blanco: #ffffff;
+    --negro: #111111;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  html{ scroll-behavior: smooth; }
+
+  body{
+    font-family: 'Segoe UI', Verdana, Arial, sans-serif;
+    color: var(--negro);
+    background: var(--blanco);
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  a{ color: inherit; text-decoration: none; }
+  ul{ list-style: none; }
+  img, svg{ max-width: 100%; display:block; }
+
+  /* ===== Header ===== */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 18px 6%;
+    background: var(--blanco);
+    border-bottom: 4px solid var(--rojo);
+    position: sticky;
+    top:0;
+    z-index: 50;
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:800;
+    font-size:1.2rem;
+    color: var(--negro);
+  }
+  .logo svg{ width:38px; height:38px; }
+  nav ul{ display:flex; gap:28px; }
+  nav a{
+    font-weight:600;
+    padding:6px 4px;
+    border-bottom:2px solid transparent;
+    transition: border-color .2s, color .2s;
+  }
+  nav a:hover{ color: var(--rojo); border-color: var(--rojo); }
+  .nav-toggle{ display:none; background:none; border:none; font-size:1.6rem; cursor:pointer; color:var(--rojo); }
+
+  /* ===== Hero ===== */
+  .hero{
+    position: relative;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 40px;
+    padding: 60px 6% 90px;
+    background: var(--blanco);
+    overflow:hidden;
+  }
+  .hero-text{ flex:1 1 420px; max-width:560px; z-index:2; }
+  .tag-badge{
+    position:absolute;
+    top: 28px;
+    right: 6%;
+    background: var(--rojo-oscuro);
+    color: var(--blanco);
+    font-weight:800;
+    font-size:.85rem;
+    letter-spacing:.5px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    z-index:3;
+  }
+  .hero h1{
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    line-height:1.08;
+    font-weight:800;
+    color: var(--negro);
+  }
+  .hero h1 .accent{ color: var(--rojo); }
+  .hero h1 .pill{
+    display:inline-block;
+    background: var(--rojo);
+    color: var(--blanco);
+    padding: 2px 16px;
+    border-radius: 30px;
+    font-size: 0.55em;
+    vertical-align: middle;
+    transform: translateY(-4px);
+  }
+  .program-pill{
+    display:inline-block;
+    margin-top: 22px;
+    background: var(--rojo-oscuro);
+    color: var(--blanco);
+    font-weight:700;
+    letter-spacing:.5px;
+    padding: 10px 22px;
+    border-radius: 30px;
+    font-size: .95rem;
+  }
+  .hero-cta{
+    margin-top: 34px;
+    display:flex;
+    flex-direction:column;
+    gap: 4px;
+  }
+  .hero-cta .cta-label{ font-weight:800; }
+  .hero-cta a{
+    font-weight:700;
+    color: var(--rojo);
+    text-decoration: underline;
+    width: fit-content;
+  }
+  .hero-cta a:hover{ color: var(--rojo-oscuro); }
+
+  .hero-contact{
+    margin-top: 30px;
+    border-top: 2px solid var(--rojo-suave);
+    padding-top: 16px;
+  }
+  .hero-contact h3{
+    font-size: .95rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    border-bottom: 2px solid var(--negro);
+    display:inline-block;
+    padding-bottom:2px;
+    margin-bottom: 8px;
+  }
+  .hero-contact p{ color: var(--rojo); font-weight:700; display:flex; align-items:center; gap:8px; }
+  .hero-contact svg{ width:20px; height:20px; }
+
+  .hero-art{
+    flex: 1 1 420px;
+    position: relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height: 420px;
+  }
+  .blob{
+    position:absolute;
+    border-radius:50%;
+    background: var(--rojo-suave);
+  }
+  .blob.b1{ width:230px; height:230px; top:-10px; right:20px; }
+  .blob.b2{ width:130px; height:130px; bottom:10px; left:10px; background: var(--rojo); opacity:.15; }
+  .hero-art .person-svg{ position:relative; z-index:2; width:52%; max-width:250px; }
+  .hero-panda{
+    position:absolute;
+    z-index:3;
+    width:34%;
+    max-width:170px;
+    border-radius: 50%;
+    background: var(--blanco);
+    border: 3px solid var(--negro);
+    box-shadow: 6px 6px 0 var(--rojo);
+    object-fit: cover;
+    aspect-ratio: 1/1;
+  }
+  .hero-panda-left{ left:0; bottom:8%; }
+  .hero-panda-right{ right:0; bottom:2%; }
+  .hero-panda-top{
+    top:-10px;
+    right:20px;
+    width:230px;
+    height:230px;
+    max-width:230px;
+  }
+
+  @keyframes float{
+    0%,100%{ transform: translateY(0); }
+    50%{ transform: translateY(-14px); }
+  }
+  .floaty{ animation: float 4s ease-in-out infinite; }
+  .hero-panda-right.floaty{ animation-delay: -2s; }
+  .hero-panda-top.floaty{ animation-delay: -1s; }
+
+  section{ padding: 70px 6%; }
+
+  .section-title{
+    text-align:center;
+    margin-bottom: 12px;
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-weight:800;
+  }
+  .section-title span{ color: var(--rojo); }
+  .section-sub{
+    text-align:center;
+    max-width: 640px;
+    margin: 0 auto 46px;
+    color:#333;
+  }
+
+  /* ===== Datos / Por qué proteger ===== */
+  .datos{ background: var(--rojo-suave); }
+  .cards-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    gap: 26px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .card{
+    background: var(--blanco);
+    border: 2px solid var(--negro);
+    border-radius: 16px;
+    padding: 26px 20px;
+    text-align:center;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .card:hover{ transform: translateY(-6px); box-shadow: 8px 8px 0 var(--rojo); }
+  .card svg{ width:56px; height:56px; margin:0 auto 14px; }
+  .card h3{ font-size:1.6rem; color: var(--rojo); margin-bottom:6px; }
+  .card p{ font-size:.95rem; }
+
+  /* ===== Album de fotos ===== */
+  .album-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+    gap: 22px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .photo-card{
+    border-radius: 18px;
+    overflow:hidden;
+    border: 3px solid var(--negro);
+    background: var(--rojo-suave);
+    position:relative;
+    aspect-ratio: 1/1;
+  }
+  .photo-card svg, .photo-card img{ width:100%; height:100%; object-fit:cover; }
+  .photo-card .cap{
+    position:absolute;
+    bottom:0; left:0; right:0;
+    background: var(--rojo);
+    color: var(--blanco);
+    text-align:center;
+    font-weight:700;
+    padding: 8px 4px;
+    font-size:.9rem;
+  }
+
+  /* ===== Adopcion / pasos ===== */
+  .pasos{ background: var(--negro); color: var(--blanco); }
+  .pasos .section-title{ color: var(--blanco); }
+  .pasos .section-title span{ color: #ff5a63; }
+  .pasos .section-sub{ color: #ddd; }
+  .pasos-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    gap: 26px;
+    max-width: 1000px;
+    margin: 0 auto;
+    counter-reset: paso;
+  }
+  .paso{
+    background: #1c1c1c;
+    border-radius: 16px;
+    padding: 30px 22px;
+    text-align:center;
+    border: 2px solid var(--rojo);
+  }
+  .paso::before{
+    counter-increment: paso;
+    content: counter(paso);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:44px; height:44px;
+    border-radius:50%;
+    background: var(--rojo);
+    color: var(--blanco);
+    font-weight:800;
+    margin: 0 auto 16px;
+  }
+  .paso h3{ margin-bottom:8px; }
+  .paso p{ color:#ccc; font-size:.92rem; }
+
+  /* ===== Contacto ===== */
+  .contacto{
+    text-align:center;
+    background: var(--rojo);
+    color: var(--blanco);
+    padding: 70px 6%;
+  }
+  .contacto h2{ font-size: clamp(1.6rem,3.5vw,2.2rem); margin-bottom: 10px; font-weight:800; }
+  .contacto p{ max-width:520px; margin: 0 auto 30px; }
+  .contact-box{
+    display:inline-flex;
+    align-items:center;
+    gap: 14px;
+    background: var(--blanco);
+    color: var(--negro);
+    padding: 18px 30px;
+    border-radius: 40px;
+    font-weight:800;
+    font-size:1.2rem;
+  }
+  .contact-box svg{ width:30px; height:30px; }
+  .contact-box span.num{ color: var(--rojo); }
+
+  footer{
+    background: var(--negro);
+    color: var(--blanco);
+    text-align:center;
+    padding: 26px 6%;
+    font-size:.85rem;
+  }
+  footer a{ color:#ff8b90; font-weight:700; }
+
+  @media (max-width: 820px){
+    nav{ position:fixed; top:70px; left:0; right:0; background:var(--blanco); border-bottom:4px solid var(--rojo); flex-direction:column; padding:20px; transform: translateY(-150%); transition: transform .25s; }
+    nav.open{ transform: translateY(0); }
+    nav ul{ flex-direction:column; gap:16px; text-align:center; }
+    .nav-toggle{ display:block; }
+    .hero{ flex-direction:column; text-align:center; padding-top:40px; }
+    .hero-cta, .hero-contact{ align-items:center; }
+    .hero-contact p{ justify-content:center; }
+    .tag-badge{ position:static; display:inline-block; margin-bottom:16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="32" r="30" fill="#d81e2c"/>
+      <path d="M32 14c-6 0-10 5-10 11 0 4 2 7 2 10 0 4-4 6-4 10 0 5 5 9 12 9s12-4 12-9c0-4-4-6-4-10 0-3 2-6 2-10 0-6-4-11-10-11z" fill="#fff"/>
+      <circle cx="26" cy="27" r="3" fill="#111"/>
+      <circle cx="38" cy="27" r="3" fill="#111"/>
+      <path d="M28 36c1.5 1.5 6.5 1.5 8 0" stroke="#111" stroke-width="2" stroke-linecap="round"/>
+      <path d="M18 20c-3-3-3-8 0-10 2 3 2 7 0 10z" fill="#a3121d"/>
+      <path d="M46 20c3-3 3-8 0-10-2 3-2 7 0 10z" fill="#a3121d"/>
+    </svg>
+    Panda Rojo · Protección Animal
+  </div>
+  <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">&#9776;</button>
+  <nav id="mainNav">
+    <ul>
+      <li><a href="#inicio">Inicio</a></li>
+      <li><a href="#por-que">Por qué protegerlos</a></li>
+      <li><a href="#album">Álbum de fotos</a></li>
+      <li><a href="#adopcion">Adopción</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="hero" id="inicio">
+  <div class="tag-badge">PROTECCIÓN ANIMAL</div>
+  <div class="hero-text">
+    <h1>Estoy <span class="accent">listo</span><br>
+      <span class="pill">para irme</span> a casa</h1>
+    <div class="program-pill">PROGRAMA DE ADOPCIÓN DE PANDAS ROJOS</div>
+    <div class="hero-cta">
+      <span class="cta-label">Haz click aquí</span>
+      <a href="#album">Álbum de fotos →</a>
+    </div>
+    <div class="hero-contact">
+      <h3>Línea de atención</h3>
+      <p>
+        <svg viewBox="0 0 24 24" fill="var(--rojo)"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.4 21 3 13.6 3 4.6c0-.6.4-1 1-1H7.6c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1L6.6 10.8z"/></svg>
+        Escríbenos: 300 000 0000
+      </p>
+    </div>
+  </div>
+
+  <div class="hero-art">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <svg class="floaty person-svg" viewBox="0 0 420 420" xmlns="http://www.w3.org/2000/svg">
+      <!-- persona -->
+      <circle cx="210" cy="150" r="52" fill="#ffe1c4"/>
+      <path d="M162 130c0-30 24-54 48-54s48 24 48 54c-16-10-80-10-96 0z" fill="#111"/>
+      <circle cx="192" cy="150" r="6" fill="#111"/>
+      <circle cx="228" cy="150" r="6" fill="#111"/>
+      <path d="M192 172c8 8 28 8 36 0" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <ellipse cx="176" cy="168" rx="8" ry="5" fill="#ff9d9d" opacity=".7"/>
+      <ellipse cx="244" cy="168" rx="8" ry="5" fill="#ff9d9d" opacity=".7"/>
+      <path d="M120 300c0-70 40-110 90-110s90 40 90 110v70H120v-70z" fill="#d81e2c"/>
+      <path d="M120 320c0-10 40-20 90-20s90 10 90 20v50H120v-50z" fill="#fff"/>
+    </svg>
+    <img class="hero-panda hero-panda-left floaty" src="panda-caricatura-saludo.jpeg" alt="Panda rojo caricatura saludando">
+    <img class="hero-panda hero-panda-right floaty" src="panda-caricatura-lateral.jpeg" alt="Panda rojo caricatura de perfil">
+    <img class="hero-panda hero-panda-top floaty" src="panda-frontal.jpeg" alt="Panda rojo de frente">
+  </div>
+</section>
+
+<section class="datos" id="por-que">
+  <h2 class="section-title">¿Por qué proteger al <span>panda rojo</span>?</h2>
+  <p class="section-sub">El panda rojo (Ailurus fulgens) está clasificado como especie en peligro de extinción. Quedan menos de 10.000 ejemplares adultos en estado silvestre y su población sigue disminuyendo por la pérdida de su hábitat natural.</p>
+  <div class="cards-grid">
+    <div class="card">
+      <svg viewBox="0 0 64 64"><path d="M32 6C20 6 12 16 12 28c0 8 4 12 4 18 0 6-6 8-6 14 0 6 10 10 22 10s22-4 22-10c0-6-6-8-6-14 0-6 4-10 4-18C52 16 44 6 32 6z" fill="#d81e2c"/><circle cx="24" cy="30" r="4" fill="#111"/><circle cx="40" cy="30" r="4" fill="#111"/></svg>
+      <h3>En peligro</h3>
+      <p>Especie catalogada como "en peligro" por la UICN desde 2015.</p>
+    </div>
+    <div class="card">
+      <svg viewBox="0 0 64 64"><path d="M32 8c14 0 22 12 22 24S46 56 32 56 10 44 10 32 18 8 32 8z" fill="none" stroke="#d81e2c" stroke-width="4"/><path d="M22 28c4-8 16-8 20 0" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+      <h3>Hábitat</h3>
+      <p>Vive en bosques de bambú de altura; la deforestación reduce su territorio cada año.</p>
+    </div>
+    <div class="card">
+      <svg viewBox="0 0 64 64"><rect x="14" y="14" width="36" height="36" rx="8" fill="#d81e2c"/><path d="M24 32l6 6 12-12" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <h3>Tu ayuda cuenta</h3>
+      <p>Adoptar, apadrinar o donar apoya directamente los programas de conservación.</p>
+    </div>
+    <div class="card">
+      <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="none" stroke="#d81e2c" stroke-width="4"/><path d="M32 20v12l8 8" stroke="#111" stroke-width="4" fill="none" stroke-linecap="round"/></svg>
+      <h3>Actúa ahora</h3>
+      <p>Cada año cuenta: entre más pronto actuemos, más fácil será revertir su declive.</p>
+    </div>
+  </div>
+</section>
+
+<section id="album">
+  <h2 class="section-title">Álbum de <span>fotos</span></h2>
+  <p class="section-sub">Conoce a algunos de los pandas rojos que esperan un hogar dentro de nuestro programa de adopción.</p>
+  <div class="album-grid">
+
+    <div class="photo-card">
+      <img src="panda-frontal.jpeg" alt="Mona, panda rojo en adopción">
+      <div class="cap">Mona</div>
+    </div>
+
+    <div class="photo-card">
+      <img src="panda-lateral.jpeg" alt="Rufo, panda rojo en adopción">
+      <div class="cap">Rufo</div>
+    </div>
+
+    <div class="photo-card">
+      <img src="panda-arbol.jpeg" alt="Coral, panda rojo en adopción">
+      <div class="cap">Coral</div>
+    </div>
+
+    <div class="photo-card">
+      <img src="panda-saludo.jpeg" alt="Bambú, panda rojo en adopción">
+      <div class="cap">Bambú</div>
+    </div>
+
+  </div>
+</section>
+
+<section class="pasos" id="adopcion">
+  <h2 class="section-title">¿Cómo <span>adoptar</span>?</h2>
+  <p class="section-sub">Adoptar un panda rojo dentro de nuestro programa de apadrinamiento es sencillo. Sigue estos pasos:</p>
+  <div class="pasos-grid">
+    <div class="paso">
+      <h3>Contáctanos</h3>
+      <p>Escríbenos por la línea de atención o el correo del programa.</p>
+    </div>
+    <div class="paso">
+      <h3>Conoce el perfil</h3>
+      <p>Revisa el álbum de fotos y la historia de cada panda rojo disponible.</p>
+    </div>
+    <div class="paso">
+      <h3>Elige tu apoyo</h3>
+      <p>Apadrina, dona o participa como voluntario en el santuario.</p>
+    </div>
+    <div class="paso">
+      <h3>Haz seguimiento</h3>
+      <p>Recibe actualizaciones periódicas sobre el bienestar de tu panda rojo.</p>
+    </div>
+  </div>
+</section>
+
+<section class="contacto" id="contacto">
+  <h2>¿Listo para ayudar?</h2>
+  <p>Contáctanos y da el primer paso para proteger a los pandas rojos.</p>
+  <div class="contact-box">
+    <svg viewBox="0 0 24 24" fill="var(--rojo)"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.4 21 3 13.6 3 4.6c0-.6.4-1 1-1H7.6c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1L6.6 10.8z"/></svg>
+    <span class="num">300 000 0000</span>
+  </div>
+</section>
+
+<footer>
+  <p>🐾 Programa de Protección y Adopción de Pandas Rojos — Todos los derechos reservados.</p>
+  <p>Reemplaza el número de línea de atención por el de tu organización.</p>
+</footer>
+
+<script>
+  const toggle = document.getElementById('navToggle');
+  const nav = document.getElementById('mainNav');
+  toggle.addEventListener('click', () => nav.classList.toggle('open'));
+  document.querySelectorAll('#mainNav a').forEach(a => a.addEventListener('click', () => nav.classList.remove('open')));
+</script>
+
+</body>
+</html>
